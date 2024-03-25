@@ -1,27 +1,12 @@
 import requests
 from src.utils.logs import Log
+from src.utils.headers import get_headers
 
 class GetData:
     def __init__(self) -> None:
         self.log = Log()
 
     def request_relocation(self, token_authorization):
-        self.headers = {
-            'accept': 'application/json',
-            'accept-language': 'pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-            'authorization': token_authorization,
-            'content-type': 'application/json',
-            'origin': 'https://www.portalinfob2b.com.br',
-            'referer': 'https://www.portalinfob2b.com.br/',
-            'sec-ch-ua': '"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-site',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-        }
-
         params = {
             'ID_SOLICITACAO': '',
             'DS_STATUS': '1', # 1 = Em Aberto
@@ -37,7 +22,7 @@ class GetData:
         response = requests.get(
             'https://apisegmentacao.portalinfob2b.com.br/API/VisaoCliente/GetAtendimentoDetalhes',
             params=params,
-            headers=self.headers,
+            headers=get_headers(token_authorization),
         )
 
         if response.ok:
@@ -57,8 +42,8 @@ class GetData:
             return status_solicitation
         else:
             print(f'{response.status_code} - {response.reason} // Authorization expired')
-
-    def request_collect_data(self, id_solicitation):
+    
+    def request_collect_data(self, id_solicitation, token_authorization):
         params = {
             'ID_SOLICITACAO': id_solicitation,
         }
@@ -66,7 +51,7 @@ class GetData:
         response = requests.get(
             'https://apisegmentacao.portalinfob2b.com.br/API/RemanejamentoEstoque/GetRemanejamentoEstoqueDetalhes',
             params=params,
-            headers=self.headers,
+            headers=get_headers(token_authorization),
         )
 
         if response.ok:
@@ -94,7 +79,7 @@ class GetData:
         if solicitation_id:
             for k, v in solicitation_id.items():
                 if v == "EM ABERTO":
-                    data_vivo_b2b = self.request_collect_data(k)
+                    data_vivo_b2b = self.request_collect_data(k, token_authorization)
                     print(data_vivo_b2b)
             return True
         else:

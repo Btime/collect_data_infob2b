@@ -6,10 +6,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from src.config.configuration import LOGIN_B2B, PASSWORD_B2B
+from src.config.configuration import LOGIN_B2B, PASSWORD_B2B, TEMP_FOLDER, URL_INFO_B2B
 import shutil
 import os
-
 
 class GetAuthorizationInfoB2B:
     def __init__(self, headless=False) -> None:
@@ -18,8 +17,8 @@ class GetAuthorizationInfoB2B:
         self.token_authorization = None
         self.login_input = LOGIN_B2B
         self.password_input = PASSWORD_B2B
-        self.infob2b_url = 'https://www.portalinfob2b.com.br/login'
-        self.temp_folder = r"C:\Users\teamb\AppData\Local\Temp\.seleniumwire"
+        self.temp_folder = TEMP_FOLDER
+        self.infob2b_url = URL_INFO_B2B
 
     def load_xpath(self):
         self.xpath_login = {
