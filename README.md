@@ -53,6 +53,7 @@ hpack==4.0.0
 hyperframe==6.0.1
 idna==3.6
 kaitaistruct==0.10
+logging==0.4.9.6
 outcome==1.3.0.post0
 pyasn1==0.5.1
 pycparser==2.21

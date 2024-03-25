@@ -1,4 +1,5 @@
 import json
+from src.utils.logs import Log
 from seleniumwire import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -6,14 +7,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from src.config.configuration import LOGIN_B2B, PASSWORD_B2B
+import shutil
+import os
+
 
 class GetAuthorizationInfoB2B:
     def __init__(self, headless=False) -> None:
         self.headless = headless
+        self.log = Log()
         self.token_authorization = None
         self.login_input = LOGIN_B2B
         self.password_input = PASSWORD_B2B
         self.infob2b_url = 'https://www.portalinfob2b.com.br/login'
+        self.temp_folder = r"C:\Users\teamb\AppData\Local\Temp\.seleniumwire"
 
     def load_xpath(self):
         self.xpath_login = {
@@ -66,10 +72,16 @@ class GetAuthorizationInfoB2B:
                     (By.XPATH, self.xpath_login['confirmation_login'])
                 )
             )
+            
+            self.log.info(
+                descricao=f"{self.login.__name__}. Login para coletar novo token de autorizacao realizado.",
+            )
 
             authorization = self.collect_token_authorization(token_authorization)
 
             self.driver.close()
+
+            self.remove_temp_folder(self.temp_folder)
 
             return authorization
 
@@ -89,7 +101,27 @@ class GetAuthorizationInfoB2B:
         with open('authorization.json', 'w') as file:
             json.dump(data, file)
 
+        self.log.info(
+            descricao=f"{self.collect_token_authorization.__name__}. Json com token de autorizacao criado.",
+        )
+
         return data
+
+    def remove_temp_folder(self, path_folder):
+        try:
+            if os.path.exists(path_folder):
+                shutil.rmtree(path_folder)
+                self.log.info(
+                    descricao=f"{self.remove_temp_folder.__name__}. Pasta temporaria do seleniumwire removida com sucesso.",
+                )            
+            else:
+                self.log.info(
+                    descricao=f"{self.remove_temp_folder.__name__}. Não existe pasta temporaria para remover.",
+                )          
+        except Exception as e:
+            self.log.info(
+                descricao=f"{self.remove_temp_folder.__name__}. Erro ao remover pasta temporaria {e}",
+            )          
 
     def run(self):
         self.load_xpath()

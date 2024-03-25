@@ -1,8 +1,10 @@
 import requests
-# from src.utils.headers_utils import get_headers
-
+from src.utils.logs import Log
 
 class GetData:
+    def __init__(self) -> None:
+        self.log = Log()
+
     def request_relocation(self, token_authorization):
         self.headers = {
             'accept': 'application/json',
@@ -47,6 +49,11 @@ class GetData:
             for item in list_dict:
                 status_solicitation[item["id_solicitacao"]] = item["ds_status"]
 
+            self.log.info(
+                status_code=response.status_code,
+                descricao=f"{self.request_relocation.__name__}. Status EM ABERTO coletados para Remanejamento de estoque",
+            )
+
             return status_solicitation
         else:
             print(f'{response.status_code} - {response.reason} // Authorization expired')
@@ -73,6 +80,11 @@ class GetData:
                 "MODELO_DE": collect_data.get("dS_MODELO_DE"),
                 "QUANTIDADE": collect_data.get("qtD_RemanejamentoEstoque"),
             }
+
+            self.log.info(
+                status_code=response.status_code,
+                descricao=f"{self.request_collect_data.__name__}. Informacoes coletadas com sucesso. ID: {collect_data.get("iD_SOLICITACAO")}",
+            )
 
             return data
 
