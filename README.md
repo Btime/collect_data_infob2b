@@ -9,6 +9,7 @@
 É necessário ter instalado corretamente em seu computador:
 
 - Python 3.8+
+- Instalar o certificado ca.crt no Chrome para o seleniumwire
 
 ### Instalação
 
@@ -73,6 +74,18 @@ urllib3==2.2.1
 wsproto==1.2.0
 zstandard==0.22.0
 ```
+
+## Instalando certificado ca.crt
+
+1. Abra o Google Chrome
+2. Definições
+3. Privacidade e segurança
+4. Gerir certificados
+5. Importar...
+6. Avançar e selecione o ca.crt
+7. Selecione a opção "Colocar todos os certificados no repositório a seguir
+8. Clique em procurar e selecione "Autoridade de Certificação Raiz Confiável"
+9. Conclua a instalação
 
 ## Uso
 
