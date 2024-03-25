@@ -1,21 +1,18 @@
-import requests
+import json
 from seleniumwire import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions as EC
-from time import sleep
-import json
-import requests
-
-# from src.config.configuration import LOGIN_B2B, PASSWORD_B2B
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from src.config.configuration import LOGIN_B2B, PASSWORD_B2B
 
 class GetAuthorizationInfoB2B:
     def __init__(self, headless=False) -> None:
         self.headless = headless
         self.token_authorization = None
+        self.login_input = LOGIN_B2B
+        self.password_input = PASSWORD_B2B
         self.infob2b_url = 'https://www.portalinfob2b.com.br/login'
 
     def load_xpath(self):
@@ -23,6 +20,7 @@ class GetAuthorizationInfoB2B:
             'login_input': '//*[@id="username"]',
             'password_input': '//*[@id="password"]',
             'button_login': '//*[@value="Entrar"]',
+            'confirmation_login': '//*[@id="appheadercomponent"]'
         }
 
     def load_browser(self):
@@ -37,8 +35,8 @@ class GetAuthorizationInfoB2B:
         self.driver = webdriver.Chrome(
             options=options
             )
-        
-        self.wait = WebDriverWait(self.driver, 3)
+
+        self.wait = WebDriverWait(self.driver, 30)
         self.driver.get(self.infob2b_url)
 
     def login(self, token_authorization=None):
@@ -47,50 +45,55 @@ class GetAuthorizationInfoB2B:
                 EC.presence_of_element_located(
                     (By.XPATH, self.xpath_login['login_input'])
                 )
-            ).send_keys('80939102')
+            ).send_keys(self.login_input)
+
             password_input = self.wait.until(
                 EC.presence_of_element_located(
                     (By.XPATH, self.xpath_login['password_input'])
                 )
-            ).send_keys('Nova@@2024')
+            ).send_keys(self.password_input)
+
             input('ENTER APÓS RESOLVER CAPTCHA')
+
             button_login = self.wait.until(
                 EC.presence_of_element_located(
                     (By.XPATH, self.xpath_login['button_login'])
                 )
             ).click()
-            find_request = self.driver.wait_for_request('/API/Usuario/GetCboUsuarioSubstituto')
-            token_authorization = find_request.headers['Authorization']
 
-            data = {
-                'token': token_authorization,
-            }
+            confirmation_login = self.wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, self.xpath_login['confirmation_login'])
+                )
+            )
 
-            sleep(1)
-
-            with open('authorization.json', 'w') as file:
-                json.dump(data, file)
-
-            sleep(1)
+            authorization = self.collect_token_authorization(token_authorization)
 
             self.driver.close()
 
-            return data
+            return authorization
 
-        except NoSuchElementException:
-            print('No element found')
-        except TimeoutException:
-            print('Timeout')
+        except NoSuchElementException as e:
+            print(e)
+        except TimeoutException as e:
+            print(e)
+
+    def collect_token_authorization(self, token_authorization):
+        find_request = self.driver.wait_for_request('/API/Usuario/GetCboUsuarioSubstituto')
+        token_authorization = find_request.headers['Authorization']
+
+        data = {
+            'token': token_authorization,
+        }
+
+        with open('authorization.json', 'w') as file:
+            json.dump(data, file)
+
+        return data
 
     def run(self):
         self.load_xpath()
         self.load_browser()
         token = self.login(token_authorization=None)
+
         return token
-
-# if __name__ == '__main__':
-#     start_get_auth = GetAuthorizationInfoB2B()
-#     start_get_auth.run()
-
-
-

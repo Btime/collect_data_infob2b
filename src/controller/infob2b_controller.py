@@ -3,10 +3,6 @@ import requests
 
 
 class GetData:
-    def __init__(self):
-        # self.headers = get_headers()
-        ...
-
     def request_relocation(self, token_authorization):
         self.headers = {
             'accept': 'application/json',
