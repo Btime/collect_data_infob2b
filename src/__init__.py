@@ -19,11 +19,9 @@ def start():
         start_get_auth.run()
         auth = json_read()
 
-    while True:
-        request_orders = start_requests.handle_process(token_authorization=auth)
+    request_orders = start_requests.handle_process(token_authorization=auth)
 
-        if request_orders == False:
-            start_get_auth.run()
-            auth = json_read()
+    if request_orders == False:
+        start_get_auth.run()
+        auth = json_read()
 
-        sleep(5)

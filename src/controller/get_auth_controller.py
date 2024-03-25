@@ -15,10 +15,6 @@ class GetAuthorizationInfoB2B:
         self.headless = headless
         self.log = Log()
         self.token_authorization = None
-        self.login_input = LOGIN_B2B
-        self.password_input = PASSWORD_B2B
-        self.temp_folder = TEMP_FOLDER
-        self.infob2b_url = URL_INFO_B2B
 
     def load_xpath(self):
         self.xpath_login = {
@@ -42,7 +38,7 @@ class GetAuthorizationInfoB2B:
             )
 
         self.wait = WebDriverWait(self.driver, 30)
-        self.driver.get(self.infob2b_url)
+        self.driver.get(URL_INFO_B2B)
 
     def login(self, token_authorization=None):
         try:
@@ -50,13 +46,13 @@ class GetAuthorizationInfoB2B:
                 EC.presence_of_element_located(
                     (By.XPATH, self.xpath_login['login_input'])
                 )
-            ).send_keys(self.login_input)
+            ).send_keys(LOGIN_B2B)
 
             password_input = self.wait.until(
                 EC.presence_of_element_located(
                     (By.XPATH, self.xpath_login['password_input'])
                 )
-            ).send_keys(self.password_input)
+            ).send_keys(PASSWORD_B2B)
 
             input('ENTER APÓS RESOLVER CAPTCHA')
 
@@ -80,7 +76,7 @@ class GetAuthorizationInfoB2B:
 
             self.driver.close()
 
-            self.remove_temp_folder(self.temp_folder)
+            self.remove_temp_folder(TEMP_FOLDER)
 
             return authorization
 
@@ -112,15 +108,15 @@ class GetAuthorizationInfoB2B:
                 shutil.rmtree(path_folder)
                 self.log.info(
                     descricao=f"{self.remove_temp_folder.__name__}. Pasta temporaria do seleniumwire removida com sucesso.",
-                )            
+                )
             else:
                 self.log.info(
                     descricao=f"{self.remove_temp_folder.__name__}. Não existe pasta temporaria para remover.",
-                )          
+                )
         except Exception as e:
             self.log.info(
                 descricao=f"{self.remove_temp_folder.__name__}. Erro ao remover pasta temporaria {e}",
-            )          
+            )
 
     def run(self):
         self.load_xpath()
